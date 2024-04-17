@@ -1,0 +1,390 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>机器学习基础（6）——支持向量机 | Asphyxia's Blog</title><meta name="author" content="LosAsphyxia,w1858682345@163.com"><meta name="copyright" content="LosAsphyxia"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="整理机器学习的基本概念和方法其六——支持向量机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基础（6）——支持向量机">
+<meta property="og:url" content="https://www.asphy124.github.io/2024/04/17/ml06/index.html">
+<meta property="og:site_name" content="Asphyxia&#39;s Blog">
+<meta property="og:description" content="整理机器学习的基本概念和方法其六——支持向量机">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.asphy124.github.io/images/1711210185952.jpg">
+<meta property="article:published_time" content="2024-04-17T09:51:30.000Z">
+<meta property="article:modified_time" content="2024-04-17T10:33:20.672Z">
+<meta property="article:author" content="LosAsphyxia">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.asphy124.github.io/images/1711210185952.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://www.asphy124.github.io/2024/04/17/ml06/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '机器学习基础（6）——支持向量机',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-04-17 18:33:20'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.1.1"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/images/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/images/1711210185952.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Asphyxia's Blog"><img class="site-icon" src="/images/favicon.ico"/><span class="site-name">Asphyxia's Blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">机器学习基础（6）——支持向量机</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-04-17T09:51:30.000Z" title="发表于 2024-04-17 17:51:30">2024-04-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-04-17T10:33:20.672Z" title="更新于 2024-04-17 18:33:20">2024-04-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="机器学习基础（6）——支持向量机"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1>支持向量机</h1>
+<h2 id="硬间隔支持向量机">硬间隔支持向量机</h2>
+<ul>
+<li>支持向量机最简单的情况是线性可分支持向量机，或硬间隔支持向量机
+<ul>
+<li>
+<p>构建它的条件是训练数据线性可分</p>
+</li>
+<li>
+<p><strong>函数间隔与几何间隔</strong></p>
+<ul>
+<li><strong>函数间隔</strong>：$label(w^Tx+b)\ or\ y_i(w^Tx+b)$</li>
+<li><strong>几何间隔</strong>：$r=\frac{label(w^Tx+b)}{||w||_2}$，当数据被正确分类时，几何间隔就是点到超平面的距离</li>
+</ul>
+</li>
+<li>
+<p>学习策略是 <strong>最大间隔法</strong>。可以表示为凸二次规划问题，其原始最优化问题为<br>
+$$ \min_{w, b} \frac{1}{2}|w|^{2} \quad \<br>
+s.t. \quad y_{i}\left(w \cdot x_{i}+b\right)-1 \geqslant 0, \quad i=1,2, \cdots, N $$</p>
+<ul>
+<li>应用拉格朗日对偶性，求解对偶问题得到原始问题的最优解
+<ul>
+<li>二次规划问题的对偶问题是<br>
+$$\min L(w,b,\alpha) = \frac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j}\left(x_{i} \cdot x_{j}\right)-\sum_{i=1}^{N} \alpha_{i} \quad \ s.t. \quad \sum_{i=1}^{N} \alpha_{i} y_{i}=0 \ \alpha_{i} \geqslant 0, \quad i=1,2, \cdots, N$$<br>
+其中$\alpha = { \alpha_1, \alpha_2, …, \alpha_N }^T$是拉格朗日乘子向量</li>
+<li>求解出对偶问题的最优值 $a^{*} = { \alpha_1^{*}, \alpha_2^{*}, …, \alpha_N^{*} }^T$</li>
+<li>对偶问题的解 $\alpha^{*}$ 中满足 $\alpha_{i}^{*}&gt;0$ 的实例点 $x_i$ 称为支持向量。支持向量可在间隔边界上，也可在间隔边界与分离超平面之间，或者在分离超平面误分一侧。</li>
+</ul>
+</li>
+<li>进而求得最优化问题的解为 $w^{*}$ ， $b^{*}$ ，
+<ul>
+<li>$w^*=\sum\limits_{i=1}^{N} \alpha_{i}^{*} y_{i} x_{i}$</li>
+<li>选择 $a^{*}$ 的一个正分量 $ a^{*}_j&gt;0 $ ,</li>
+<li>计算 $ b^{*}=y_j - \sum\limits_{i=1}^{N} \alpha_{i}^{*}  y_{i} (x_{i}x_{j})$</li>
+</ul>
+</li>
+<li>得到线性可分支持向量机，分离超平面是
+<ul>
+<li>$w^{*} \cdot x+b^{*}=0$</li>
+</ul>
+</li>
+<li>得到分类决策函数是
+<ul>
+<li>$f(x)=\operatorname{sign}\left(w^{*} \cdot x+b^{*}\right)$</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>线性可分支持向量机的最优解存在且唯一</strong>。位于间隔边界上的实例点为支持向量。最优分离超平面由支持向量完全决定。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="软间隔支持向量机">软间隔支持向量机</h2>
+<ul>
+<li>
+<p>引入松弛变量 $\xi_{\mathrm{i}}$ ，使近似线性可分的训练数据“可分”</p>
+</li>
+<li>
+<p>原始最优化问题是<br>
+$$\min _{w, b, \xi} \frac{1}{2}|w|^{2}+C \sum_{i=1}^{N} \xi_{i} \quad \ s.t. \quad y_{i}\left(w \cdot x_{i}+b\right) \geqslant 1-\xi_{i}, \quad i=1,2, \cdots, N\\xi_{i} \geqslant 0, \quad i=1,2, \cdots, N$$<br>
+$C&gt;0$ 被称为惩罚参数</p>
+</li>
+<li>
+<p>线性可分支持向量机的解 $w^{*}$ 唯一但 $b^{*}$ 不唯一。对偶问题是<br>
+$$\min _{\alpha} \frac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \alpha_{i} \alpha_{j} y_{i} y_{j}\left(x_{i} \cdot x_{j}\right)-\sum_{i=1}^{N} \alpha_{i} \quad \ s.t. \quad \sum_{i=1}^{N} \alpha_{i} y_{i}=0 \quad 0 \leqslant \alpha_{i} \leqslant C, \quad i=1,2, \cdots, N$$</p>
+</li>
+<li>
+<p>线性支持向量机学习等价于最小化二阶范数正则化的合页函数<br>
+$$\sum_{i=1}^{N}\left[1-y_{i}\left(w \cdot x_{i}+b\right)\right]_{+}+\lambda|w|^{2}$$</p>
+</li>
+</ul>
+<h2 id="非线性支持向量机">非线性支持向量机</h2>
+<ul>
+<li>对于输入空间中的非线性分类问题，可以通过非线性变换将它转化为某个高维特征空间中的线性分类问题，在高维特征空间中学习线性支持向量机。</li>
+<li>核函数表示 通过一个非线性转换后的两个实例间的内积
+<ul>
+<li>核函数$K(x,z)$
+<ul>
+<li>存在一个从输入空间x到特征空间的映射$\mathcal{X} \rightarrow \mathcal{H}$，对任意$\mathcal{X}$，有$K(x, z)=\phi(x) \cdot \phi(z)$</li>
+</ul>
+</li>
+<li>对称函数$K(x,z)$为正定核的充要条件：
+<ul>
+<li>对任意$\mathrm{x}_{\mathrm{i}} \in \mathcal{X}, \quad \mathrm{i}=1,2, \ldots, \mathrm{m}, \forall m \in \mathbf{N}$，对称函数$K(x,z)$对应的Gram矩阵是半正定的</li>
+</ul>
+</li>
+<li>在线性支持向量机学习的对偶问题中，用核函数$K(x,z)$替代内积，求解得到的就是非线性支持向量机<br>
+$$f(x)=\operatorname{sign}\left(\sum_{i=1}^{N} \alpha_{i}^{*} y_{i} K\left(x, x_{i}\right)+b^{*}\right)$$</li>
+</ul>
+</li>
+</ul>
+<h2 id="SMO算法">SMO算法</h2>
+<ul>
+<li>不断地将原二次规划问题分解为只有两个变量的二次规划子问题，并对子问题进行解析求解，直到所有变量满足KKT条件为止</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://www.Asphy124.github.io">LosAsphyxia</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://www.asphy124.github.io/2024/04/17/ml06/">https://www.asphy124.github.io/2024/04/17/ml06/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://www.Asphy124.github.io" target="_blank">Asphyxia's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a></div><div class="post_share"><div class="social-share" data-image="/images/1711210185952.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/04/17/ml05/" title="机器学习基础（5）——逻辑斯谛回归"><img class="cover" src="/images/Screenshot_20240229_085704.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">机器学习基础（5）——逻辑斯谛回归</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2024/04/17/ml-math01/" title="机器学习数学基础——线性代数"><img class="cover" src="/images/1711603087743.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-17</div><div class="title">机器学习数学基础——线性代数</div></div></a></div><div><a href="/2024/04/17/ml-math03/" title="机器学习数学基础——数值方法"><img class="cover" src="/images/1711603087743.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-17</div><div class="title">机器学习数学基础——数值方法</div></div></a></div><div><a href="/2024/04/17/ml01/" title="机器学习基础（1）——感知机"><img class="cover" src="/images/1711603093381.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-17</div><div class="title">机器学习基础（1）——感知机</div></div></a></div><div><a href="/2024/04/17/ml-math02/" title="机器学习数学基础——概率论，信息论"><img class="cover" src="/images/Screenshot_20240229_191212.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-17</div><div class="title">机器学习数学基础——概率论，信息论</div></div></a></div><div><a href="/2024/04/17/ml02/" title="机器学习基础（2）——K近邻"><img class="cover" src="/images/1711209214085.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-17</div><div class="title">机器学习基础（2）——K近邻</div></div></a></div><div><a href="/2024/04/17/ml03/" title="机器学习基础（3）——朴素贝叶斯"><img class="cover" src="/images/1711209214085.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-04-17</div><div class="title">机器学习基础（3）——朴素贝叶斯</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div><div class="comment-switch"><span class="first-comment">Valine</span><span id="switch-btn"></span><span class="second-comment">Disqus</span></div></div><div class="comment-wrap"><div><div class="vcomment" id="vcomment"></div></div><div><div id="disqus_thread"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/images/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LosAsphyxia</div><div class="author-info__description">hi, welcome to my blog</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Asphy124"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Asphy124" target="_blank" title="Github"><i class="fab fa-github" style="color: #hdhfbb;"></i></a><a class="social-icon" href="mailto:w1858682345@163.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #000000;"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">支持向量机</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A1%AC%E9%97%B4%E9%9A%94%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA"><span class="toc-number">1.1.</span> <span class="toc-text">硬间隔支持向量机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E9%97%B4%E9%9A%94%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA"><span class="toc-number">1.2.</span> <span class="toc-text">软间隔支持向量机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E7%BA%BF%E6%80%A7%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA"><span class="toc-number">1.3.</span> <span class="toc-text">非线性支持向量机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMO%E7%AE%97%E6%B3%95"><span class="toc-number">1.4.</span> <span class="toc-text">SMO算法</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/04/17/ml06/" title="机器学习基础（6）——支持向量机"><img src="/images/1711210185952.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="机器学习基础（6）——支持向量机"/></a><div class="content"><a class="title" href="/2024/04/17/ml06/" title="机器学习基础（6）——支持向量机">机器学习基础（6）——支持向量机</a><time datetime="2024-04-17T09:51:30.000Z" title="发表于 2024-04-17 17:51:30">2024-04-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/04/17/ml05/" title="机器学习基础（5）——逻辑斯谛回归"><img src="/images/Screenshot_20240229_085704.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="机器学习基础（5）——逻辑斯谛回归"/></a><div class="content"><a class="title" href="/2024/04/17/ml05/" title="机器学习基础（5）——逻辑斯谛回归">机器学习基础（5）——逻辑斯谛回归</a><time datetime="2024-04-17T09:51:19.000Z" title="发表于 2024-04-17 17:51:19">2024-04-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/04/17/ml04/" title="机器学习基础（4）——决策树"><img src="/images/Screenshot_20240229_085704.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="机器学习基础（4）——决策树"/></a><div class="content"><a class="title" href="/2024/04/17/ml04/" title="机器学习基础（4）——决策树">机器学习基础（4）——决策树</a><time datetime="2024-04-17T09:51:01.000Z" title="发表于 2024-04-17 17:51:01">2024-04-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/04/17/ml03/" title="机器学习基础（3）——朴素贝叶斯"><img src="/images/1711209214085.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="机器学习基础（3）——朴素贝叶斯"/></a><div class="content"><a class="title" href="/2024/04/17/ml03/" title="机器学习基础（3）——朴素贝叶斯">机器学习基础（3）——朴素贝叶斯</a><time datetime="2024-04-17T09:50:45.000Z" title="发表于 2024-04-17 17:50:45">2024-04-17</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/04/17/ml02/" title="机器学习基础（2）——K近邻"><img src="/images/1711209214085.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="机器学习基础（2）——K近邻"/></a><div class="content"><a class="title" href="/2024/04/17/ml02/" title="机器学习基础（2）——K近邻">机器学习基础（2）——K近邻</a><time datetime="2024-04-17T09:49:47.000Z" title="发表于 2024-04-17 17:49:47">2024-04-17</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/images/1711210185952.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2024 By LosAsphyxia</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">推链 <a target="_blank" rel="noopener" href="https://www.lxixsxa.com">LiSA_Official</a> 谢谢！</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: '',
+      appKey: '',
+      avatar: 'monsterid',
+      serverURLs: '',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine@1.5.1/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Valine' === 'Valine' || !true) {
+    if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script><script>(() => {
+  const disqus_config = function () {
+    this.page.url = 'https://www.asphy124.github.io/2024/04/17/ml06/'
+    this.page.identifier = '/2024/04/17/ml06/'
+    this.page.title = '机器学习基础（6）——支持向量机'
+  }
+
+  const disqusReset = () => {
+    window.DISQUS && window.DISQUS.reset({
+      reload: true,
+      config: disqus_config
+    })
+  }
+
+  btf.addGlobalFn('themeChange', disqusReset, 'disqus')
+
+  const loadDisqus = () =>{
+    if (window.DISQUS) disqusReset()
+    else {
+      const script = document.createElement('script')
+      script.src = 'https://.disqus.com/embed.js'
+      script.setAttribute('data-timestamp', +new Date())
+      document.head.appendChild(script)
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqus-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=&api_key=&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Valine' === 'Disqus' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqus_thread'), loadDisqus)
+    else {
+      loadDisqus()
+      GLOBAL_CONFIG_SITE.isPost && getCount()
+    }
+  } else {
+    window.loadOtherComment = loadDisqus
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
